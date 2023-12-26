@@ -1,6 +1,36 @@
 import numpy as np
 import cv2
 
+def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
+    """
+
+    :param image: image to apply convolution
+    :param image_pos: current pixel to apply kernel
+    :param kernel: the gaussian filter kernel
+    :return: the pixel value
+    """
+    output = 0
+
+    kernel_size = kernel.shape
+    image_size = image.shape
+
+    m = 0
+    n = 0
+    while m < kernel_size[0]:
+        while n < kernel_size[1]:
+            if image_pos[0] + m >= image_size[0] or image_pos[1] + n >= image_size[1]:
+                val = 0
+            else:
+                val = image[image_pos[0] + m, image_pos[1] + n] * kernel[m, n]
+
+            output += val
+
+            n += 1
+        m += 1
+        n = 0
+
+    return output
+
 def image_convolution(kernel: np.ndarray, image: np.ndarray) -> np.ndarray:
     i = 0
     j = 0
@@ -10,8 +40,9 @@ def image_convolution(kernel: np.ndarray, image: np.ndarray) -> np.ndarray:
 
     while i < img_size[0]:
         while j < img_size[1]:
-
+            output[i,j] = apply_kernel(image, (i, j), kernel)
             j += 1
+
         i += 1
 
     return output
