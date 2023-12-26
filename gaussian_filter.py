@@ -3,7 +3,12 @@ import cv2
 
 def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
-    Helper function for image_convolution. Applies the kernel to the image
+    Helper function for image_convolution. Applies the kernel to the image.
+
+    NOTE: if the bound of the image is exceeded the value for one of the terms of hte pixel value will
+          be set to 0
+
+    Math Source: https://homepages.inf.ed.ac.uk/rbf/HIPR2/convolve.htm
 
     :param image: image to apply convolution
     :param image_pos: current pixel to apply kernel
@@ -20,6 +25,7 @@ def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
     while m < kernel_size[0]:
         while n < kernel_size[1]:
             if image_pos[0] + m >= image_size[0] or image_pos[1] + n >= image_size[1]:
+                # exceeded image boundary
                 val = 0
             else:
                 val = image[image_pos[0] + m, image_pos[1] + n] * kernel[m, n]
@@ -32,7 +38,7 @@ def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
 
     return output
 
-def image_convolution(kernel: np.ndarray, image: np.ndarray) -> np.ndarray:
+def image_convolution(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     i = 0
     j = 0
     img_size = image.shape # tuple of image dimension
@@ -43,16 +49,19 @@ def image_convolution(kernel: np.ndarray, image: np.ndarray) -> np.ndarray:
         while j < img_size[1]:
             output[i,j] = apply_kernel(image, (i, j), kernel)
             j += 1
-
+        j = 0
         i += 1
 
-    # MAYBE ROUND THE OUTPUT
+    # Round output to integer
+    output = np.round(output).astype(int)
 
     return output
 
 def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
     """
     Initializes a numpy array that represents a 2-dimensional gaussian kernel of <size> rows and <size> columns.
+
+    Math source: https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
 
     :param size: The dimension of the size x size array. Should be an odd number
     :param sigma: The standard deviation
