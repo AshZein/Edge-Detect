@@ -3,6 +3,7 @@ import cv2
 
 def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
+    Helper function for image_convolution. Applies the kernel to the image
 
     :param image: image to apply convolution
     :param image_pos: current pixel to apply kernel
@@ -44,6 +45,8 @@ def image_convolution(kernel: np.ndarray, image: np.ndarray) -> np.ndarray:
             j += 1
 
         i += 1
+
+    # MAYBE ROUND THE OUTPUT
 
     return output
 
