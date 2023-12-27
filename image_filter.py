@@ -104,6 +104,28 @@ def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
 def get_sobel_kernels():
     return sobel_kernel_x, sobel_kernel_y
 
+def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray):
+    """
+    Compute the gradient of the image G = (G_x^2 + G_y^2)^(1/2)
+    :param sobel_x: the gradient in the x direction
+    :param sobel_y: the gradient in the y direction
+    :return: the gradient of the image
+    """
+    img_size = sobel_x.shape
+
+    output = np.zeros(img_size)
+
+    i = 0
+    j = 0
+    while i < img_size[0]:
+        while j < img_size[1]:
+            output[i, j] = (((sobel_x[i, j]) ** 2) + ((sobel_y[i, j]) ** 2)) ** (1/2)
+            j += 1
+        j = 0
+        i += 1
+
+    return output
+
 
 if __name__ == "__main__":
     kern = create_gaussian_kernel(5)
