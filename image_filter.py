@@ -5,7 +5,6 @@ import cv2
 sobel_kernel_x = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=int)
 sobel_kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=int)
 
-
 def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
     Helper function for image_convolution. Applies the kernel to the image.
@@ -100,6 +99,10 @@ def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
     fltr /= np.sum(fltr)
 
     return fltr
+
+
+def get_sobel_kernels():
+    return sobel_kernel_x, sobel_kernel_y
 
 
 if __name__ == "__main__":
