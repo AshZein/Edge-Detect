@@ -1,11 +1,13 @@
 import numpy as np
 import cv2
 
-def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
+
+def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
     Helper function for image_convolution. Applies the kernel to the image.
 
-    NOTE: if the bound of the image is exceeded the value for one of the terms of hte pixel value will
+    NOTE: if the bound of the image is exceeded the value for one of the terms
+    of the pixel value will
           be set to 0
 
     Math Source: https://homepages.inf.ed.ac.uk/rbf/HIPR2/convolve.htm
@@ -38,12 +40,13 @@ def apply_kernel(image:np.ndarray, image_pos: tuple, kernel: np.ndarray):
 
     return output
 
+
 def image_convolution(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     i = 0
     j = 0
-    img_size = image.shape # tuple of image dimension
+    img_size = image.shape  # tuple of image dimension
 
-    output = np.zeros(img_size) # output image array
+    output = np.zeros(img_size)  # output image array
 
     while i < img_size[0]:
         while j < img_size[1]:
@@ -57,18 +60,19 @@ def image_convolution(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
     return output
 
+
 def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
     """
-    Initializes a numpy array that represents a 2-dimensional gaussian kernel of <size> rows and <size> columns.
+    Initializes a numpy array that represents a 2-dimensional gaussian kernel of
+    <size> rows and <size> columns.
 
     Math source: https://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
 
     :param size: The dimension of the size x size array. Should be an odd number
     :param sigma: The standard deviation
-    :param factor: the factor to make kernel values integer
     :return: A size x size gaussian filter kernel
     """
-    fltr = np.zeros((size, size)) # initialize (size X size) gaussian filter
+    fltr = np.zeros((size, size))  # initialize (size X size) gaussian filter
 
     i = 0
     j = 0
@@ -92,6 +96,7 @@ def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
     fltr /= np.sum(fltr)
 
     return fltr
+
 
 if __name__ == "__main__":
     kern = create_gaussian_kernel(5)
