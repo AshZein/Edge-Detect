@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import  gaussian_filter as gf
 
 def open_img_grey(path: str):
     img = cv2.imread(path)
@@ -9,4 +10,10 @@ def open_img_grey(path: str):
     return grey_img
 
 if __name__ == '__main__':
-    pass
+    img = open_img_grey("test_img_1.jpg")
+
+    cv2.imwrite("original.jpg", img)
+
+    
+
+
