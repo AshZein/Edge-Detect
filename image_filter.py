@@ -2,13 +2,13 @@ import numpy as np
 import math
 import cv2
 
-# sobel kernels
+# 3x3 sobel kernels
 sobel_kernel_x = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=int)
 sobel_kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=int)
 
 def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
-    Helper function for image_convolution. Applies the kernel to the image.
+    Helper function for image_convolution. Applies the kernel to the image at <image_pos>.
 
     NOTE: if the bound of the image is exceeded the value for one of the terms
     of the pixel value will
@@ -26,8 +26,9 @@ def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     kernel_size = kernel.shape
     image_size = image.shape
 
-    m = 0
-    n = 0
+    # apply each kernel value
+    m = 0  # row
+    n = 0  # column
     while m < kernel_size[0]:
         while n < kernel_size[1]:
             if image_pos[0] + m >= image_size[0] or image_pos[1] + n >= image_size[1]:
@@ -46,18 +47,19 @@ def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
 
 
 def image_convolution(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
-    i = 0
-    j = 0
     img_size = image.shape  # tuple of image dimension
 
     output = np.zeros(img_size)  # output image array
 
-    while i < img_size[0]:
-        while j < img_size[1]:
-            output[i,j] = apply_kernel(image, (i, j), kernel)
-            j += 1
-        j = 0
-        i += 1
+    # apply image kernel to each image pixel (x,y)
+    x = 0
+    y = 0
+    while x < img_size[0]:
+        while y < img_size[1]:
+            output[x, y] = apply_kernel(image, (x, y), kernel)
+            y += 1
+        y = 0
+        x += 1
 
     # Round output to integer
     output = np.round(output).astype(int)
@@ -116,14 +118,14 @@ def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray):
 
     output = np.zeros(img_size)
 
-    i = 0
-    j = 0
-    while i < img_size[0]:
-        while j < img_size[1]:
-            output[i, j] = (((sobel_x[i, j]) ** 2) + ((sobel_y[i, j]) ** 2)) ** (1/2)
-            j += 1
-        j = 0
-        i += 1
+    x = 0
+    y = 0
+    while x < img_size[0]:
+        while y < img_size[1]:
+            output[x, y] = (((sobel_x[x, y]) ** 2) + ((sobel_y[x, y]) ** 2)) ** (1/2)
+            y += 1
+        y = 0
+        x += 1
 
     return output
 
@@ -140,15 +142,15 @@ def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray):
 
     output = np.zeros(output_size)
 
-    i = 0
-    j = 0
-    while i < output_size[0]:
-        while j < output_size[1]:
-            output[i, j] = math.atan(sobel_x[i, j] / sobel_y[i, j])
+    x = 0
+    y = 0
+    while x < output_size[0]:
+        while y < output_size[1]:
+            output[x, y] = math.atan(sobel_x[x, y] / sobel_y[x, y])
 
-            j += 1
-        j = 0
-        i += 1
+            y += 1
+        y = 0
+        x += 1
 
     return output
 
