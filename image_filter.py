@@ -1,6 +1,10 @@
 import numpy as np
 import cv2
 
+# sobel kernels
+sobel_kernel_x = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=int)
+sobel_kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=int)
+
 
 def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """

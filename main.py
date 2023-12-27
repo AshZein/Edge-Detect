@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import  gaussian_filter as gf
+import  image_filter as gf
 
 
 def open_img_grey(path: str):
