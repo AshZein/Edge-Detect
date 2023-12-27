@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import cv2
 
 # sobel kernels
@@ -120,6 +121,31 @@ def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray):
     while i < img_size[0]:
         while j < img_size[1]:
             output[i, j] = (((sobel_x[i, j]) ** 2) + ((sobel_y[i, j]) ** 2)) ** (1/2)
+            j += 1
+        j = 0
+        i += 1
+
+    return output
+
+
+def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray):
+    """
+    compute the gradient direction. using angle = arctan(G_y / G_x)
+
+    :param sobel_x: image with the sobel x-direction kernel applied
+    :param sobel_y: image with the sobel y-direction kernel applied
+    :return: 2d numpy array of directions at each pixel
+    """
+    output_size = sobel_x.shape
+
+    output = np.zeros(output_size)
+
+    i = 0
+    j = 0
+    while i < output_size[0]:
+        while j < output_size[1]:
+            output[i, j] = math.atan(sobel_x[i, j] / sobel_y[i, j])
+
             j += 1
         j = 0
         i += 1
