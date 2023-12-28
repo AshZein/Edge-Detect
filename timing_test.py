@@ -1,4 +1,7 @@
 import time
+
+import numpy as np
+
 import image_filter as imf
 import cv2
 
@@ -17,7 +20,7 @@ if __name__ == "__main__":
     sobel_y_filtered = imf.image_convolution_mp(gauss_filtered_img, sobel_kernels[1])
 
     # Gradient
-    imf.combine_sobel(sobel_x_filtered, sobel_y_filtered)
+    grad_multi = imf.combine_sobel(sobel_x_filtered, sobel_y_filtered)
     time1 = time.time()
 
     print("With multiprocessing: ", time1-time0)
@@ -31,8 +34,10 @@ if __name__ == "__main__":
     sobel_y_filtered = imf.image_convolution(gauss_filtered_img, sobel_kernels[1])
 
     # Gradient
-    imf.combine_sobel(sobel_x_filtered, sobel_y_filtered)
+    grad_not_multi = imf.combine_sobel(sobel_x_filtered, sobel_y_filtered)
 
     time1 = time.time()
     print("No multiprocessing: ", time1-time0)
 
+    assert grad_not_multi.shape == grad_multi.shape
+    assert np.array_equal(grad_not_multi, grad_multi)
