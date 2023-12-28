@@ -9,6 +9,8 @@ sobel_kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=int)
 NUM_PROCESSES = 4
 active_processes = 0
 
+process_count_lock = mp.Lock()
+
 def apply_kernel(image: np.ndarray, image_pos: tuple, kernel: np.ndarray):
     """
     Helper function for image_convolution. Applies the kernel to the image at <image_pos>.
@@ -84,6 +86,11 @@ def apply_kernel_mp(image: np.ndarray, image_pos: tuple, kernel: np.ndarray, fin
     :param kernel: the gaussian filter kernel
     :return: the pixel value
     """
+    global active_processes
+    process_count_lock.aquire()
+    active_processes += 1
+    process_count_lock.release()
+
     output = 0
 
     kernel_size = kernel.shape
@@ -109,8 +116,9 @@ def apply_kernel_mp(image: np.ndarray, image_pos: tuple, kernel: np.ndarray, fin
     final[image_pos[0], image_pos[1]] = output
 
     # LOCK
-    global active_processes
+    process_count_lock.aquire()
     active_processes -= 1
+    process_count_lock.release()
     # UNLOCK
 
     return None
