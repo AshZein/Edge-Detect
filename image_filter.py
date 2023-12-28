@@ -1,12 +1,14 @@
 import numpy as np
 import math
 import multiprocessing as mp
+import os
 
 # 3x3 sobel kernels
 sobel_kernel_x = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=int)
 sobel_kernel_y = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=int)
 
-NUM_PROCESSES = 4
+NUM_PROCESSES = 8
+
 active_processes = 0
 
 process_count_lock = mp.Lock()
@@ -86,11 +88,6 @@ def apply_kernel_mp(image: np.ndarray, image_pos: tuple, kernel: np.ndarray, fin
     :param kernel: the gaussian filter kernel
     :return: the pixel value
     """
-    global active_processes
-    process_count_lock.aquire()
-    active_processes += 1
-    process_count_lock.release()
-
     output = 0
 
     kernel_size = kernel.shape
@@ -115,13 +112,92 @@ def apply_kernel_mp(image: np.ndarray, image_pos: tuple, kernel: np.ndarray, fin
 
     final[image_pos[0], image_pos[1]] = output
 
-    # LOCK
-    process_count_lock.aquire()
-    active_processes -= 1
-    process_count_lock.release()
-    # UNLOCK
-
     return None
+
+def apply_kernel_to_chunk(chunk: tuple[tuple[int]], kernel, image, output):
+    x = chunk[0][0]
+    y = chunk[1][0]
+
+    completed = 0
+
+    while x < chunk[0][1]:
+        while y < chunk[1][1]:
+            apply_kernel_mp(image, (x, y), kernel, output)
+            y += 1
+            completed += 1
+
+        y = 0
+        x += 1
+
+
+def split_image(image:np.ndarray):
+    # Get the shape of the array
+    img_size = image.shape
+    rows = img_size[0]
+    cols = img_size[1]
+
+    # Calculate the split points
+    row_split = rows // 2
+    col_split = cols // 2
+
+    # Create the list of tuples for each piece
+    pieces = [
+        ((0, row_split), (0, col_split)),
+        ((0, row_split), (col_split, cols)),
+        ((row_split, rows), (0, col_split)),
+        ((row_split, rows), (col_split, cols))
+    ]
+
+    # Split each piece into two
+    final_pieces = []
+    for piece in pieces:
+        row_range, col_range = piece
+        row_mid = (row_range[1] - row_range[0]) // 2 + row_range[0]
+        col_mid = (col_range[1] - col_range[0]) // 2 + col_range[0]
+
+        final_pieces.extend([
+            (row_range, (col_range[0], col_mid)),
+            (row_range, (col_mid, col_range[1])),
+        ])
+
+    return final_pieces
+    # image_chunks = []
+    #
+    # img_size = image.shape
+    #
+    # if img_size[0] >= img_size[1]: # landscape photo
+    #     chunk_width = img_size[0] // 4
+    #     chunk_height = img_size[1] // 2
+    # else:
+    #     chunk_width = img_size[1] // 4
+    #     chunk_height = img_size[0] // 2
+    #
+    # curr_width = 0
+    # curr_height = 0
+    #
+    # x = 0
+    # y = 0
+    #
+    # while curr_height < img_size[1]:
+    #     while curr_width < img_size[0]:
+    #         if curr_width + chunk_width > img_size[0]:
+    #             x = img_size[0]
+    #         else:
+    #             x = curr_width + chunk_width
+    #
+    #         if curr_height + chunk_height > img_size[1]:
+    #             y = img_size[1]
+    #         else:
+    #             y = curr_height + chunk_height
+    #
+    #         bounds = ((curr_width, x), (curr_height, y))
+    #         image_chunks.append(bounds)
+    #
+    #         curr_width = x
+    #     curr_width = 0
+    #     curr_height = y
+    #
+    # return image_chunks
 
 
 def image_convolution_mp(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
@@ -129,20 +205,17 @@ def image_convolution_mp(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
     output = np.zeros(img_size)  # output image array
 
-    # apply image kernel to each image pixel (x,y)
-    x = 0
-    y = 0
-    while x < img_size[0]:
-        while y < img_size[1]:
-            while active_processes == NUM_PROCESSES:
-                pass
-            # NEED  TO SETUP A LOCK FOR THE PROCESSES AND COUNTERS
-            p = mp.Process(target=apply_kernel_mp, args=(image, (x,y), kernel, output))
-            p.start()
-            #output[x, y] = apply_kernel(image, (x, y), kernel)
-            y += 1
-        y = 0
-        x += 1
+    image_chunks = split_image(image)
+    processes = []
+
+    for chunk in image_chunks:
+        p = mp.Process(target=apply_kernel_to_chunk, args = (chunk, kernel, image, output))
+        processes.append(p)
+        p.start()
+        print("process started")
+
+    for r in processes:
+        r.join()
 
     # Round output to integer
     output = np.round(output).astype(int)
