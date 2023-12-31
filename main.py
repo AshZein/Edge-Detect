@@ -5,7 +5,7 @@ import utilities as util
 import sys
 import os
 
-valid_ops = ["sharpen", "edge-detect"]
+valid_ops = [ "edge-detect"]
 
 
 def open_img_grey(path: str) -> np.ndarray:
@@ -39,9 +39,6 @@ if __name__ == '__main__':
         
         if sys.argv[1].lower() == "edge-detect":
             output = perform_edge_detect(img)
-
-        elif sys.argv[1].lower() == "sharpen":
-            output = imf.sharpen_image(img, 13)
 
         if len(sys.argv) == 3:
             filename = sys.argv[2].split("/")

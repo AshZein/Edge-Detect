@@ -95,13 +95,3 @@ def sobel_gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.nda
         x += 1
 
     return output
-
-
-def sharpen_image(img: np.ndarray, amount: int) -> np.ndarray:
-    gaussian_kernel = create_gaussian_kernel(5, amount)
-
-    gaussian_blurred = util.image_convolution(img, gaussian_kernel)
-
-    sharpened = img + (img - gaussian_blurred)
-
-    return sharpened
