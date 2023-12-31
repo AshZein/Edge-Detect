@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import utilities as util
 import cv2
 
 # 3x3 sobel kernels
@@ -47,7 +48,8 @@ def create_gaussian_kernel(size: int, sigma=1) -> np.ndarray:
 def get_sobel_kernels():
     return sobel_kernel_x, sobel_kernel_y
 
-def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray):
+
+def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
     """
     Compute the gradient of the image G = (G_x^2 + G_y^2)^(1/2)
     :param sobel_x: the gradient in the x direction
@@ -70,7 +72,7 @@ def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray):
     return output
 
 
-def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray):
+def sobel_gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
     """
     compute the gradient direction. using angle = arctan(G_y / G_x)
 
@@ -93,3 +95,13 @@ def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray):
         x += 1
 
     return output
+
+
+def sharpen_image(img: np.ndarray, amount: int) -> np.ndarray:
+    gaussian_kernel = create_gaussian_kernel(5, amount)
+
+    gaussian_blurred = util.image_convolution(img, gaussian_kernel)
+
+    sharpened = img + (img - gaussian_blurred)
+
+    return sharpened

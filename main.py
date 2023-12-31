@@ -5,15 +5,18 @@ import utilities as util
 import sys
 import os
 
+valid_ops = ["sharpen", "edge-detect"]
 
-def open_img_grey(path: str)-> np.ndarray:
+
+def open_img_grey(path: str) -> np.ndarray:
     img = cv2.imread(path)
 
     grey_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     return grey_img
 
-def create_gradient(img: np.ndarray)-> np.ndarray:
+
+def perform_edge_detect(img: np.ndarray) -> np.ndarray:
     gaussian_kernel = imf.create_gaussian_kernel(5, 14)
 
     sobel_kernels = imf.get_sobel_kernels()
@@ -29,22 +32,25 @@ def create_gradient(img: np.ndarray)-> np.ndarray:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        print("please enter a file path.")
-    elif len(sys.argv) == 2:
-        img = open_img_grey(sys.argv[1])
-        grad = create_gradient(img)
+    # command: python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME
 
-        filename = sys.argv[1].split("/")
-        filename = filename[-1]
-
-        cv2.imwrite(f"output_{filename}", grad)
-
-    elif len(sys.argv) == 3:
-        img = open_img_grey(sys.argv[1])
-        grad = create_gradient(img)
-
-        cv2.imwrite(f"{sys.argv[2]}.jpg", grad)
+    if len(sys.argv) > 2 and sys.argv[1].lower() in valid_ops:
+        img = open_img_grey(sys.argv[2])
         
+        if sys.argv[1].lower() == "edge-detect":
+            output = perform_edge_detect(img)
+
+        elif sys.argv[1].lower() == "sharpen":
+            output = imf.sharpen_image(img, 13)
+
+        if len(sys.argv) == 3:
+            filename = sys.argv[2].split("/")
+            filename = filename[-1]
+
+            cv2.imwrite(f"output_{filename}", output)
+
+        elif len(sys.argv) == 4:
+            cv2.imwrite(f"{sys.argv[3]}.jpg", output)
+
     else:
-        print("too many arguments")
+        print("invalid command.\n python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME")
