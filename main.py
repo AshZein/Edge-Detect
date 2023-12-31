@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import  image_filter as imf
+import sys
 import os
 
 
@@ -27,15 +28,20 @@ def create_gradient(img: np.ndarray)-> np.ndarray:
 
 
 if __name__ == '__main__':
-    images = os.listdir("test_images")
-    images.remove(".DS_Store")
-    for test_img in images:
-        img = open_img_grey(f"test_images/{test_img}")
+    if len(sys.argv) == 1:
+        print("please enter a file path.")
+    elif len(sys.argv) == 2:
+        img = open_img_grey(sys.argv[1])
         gradient = create_gradient(img)
 
-        cv2.imwrite(f"gradient_{test_img}.jpg", gradient)
+        filename = sys.argv[1].split("/")
+        filename = filename[-1]
 
+        cv2.imwrite(f"output_{filename}", gradient)
+    elif len(sys.argv) == 3:
+        img = open_img_grey(sys.argv[1])
+        gradient = create_gradient(img)
 
-    
-
-
+        cv2.imwrite(f"{sys.argv[2]}.jpg", gradient)
+    else:
+        print("too many arguments")
