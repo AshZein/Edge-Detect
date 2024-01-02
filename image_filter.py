@@ -72,9 +72,9 @@ def combine_sobel(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
     return output
 
 
-def sobel_gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
+def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
     """
-    compute the gradient direction. using angle = arctan(G_y / G_x)
+    compute the gradient direction (in degrees). using angle = arctan(G_y / G_x)
 
     :param sobel_x: image with the sobel x-direction kernel applied
     :param sobel_y: image with the sobel y-direction kernel applied
@@ -88,8 +88,15 @@ def sobel_gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.nda
     y = 0
     while x < output_size[0]:
         while y < output_size[1]:
-            output[x, y] = math.atan(sobel_x[x, y] / sobel_y[x, y])
+            if sobel_y[x, y] == 0 and sobel_x[x, y] == 0:  # would've be undefined, but 0 if denominator non-zero
+                angle = 0
+            elif sobel_x[x, y] == 0:  # would be undefined
+                angle = 90
+            else:
+                angle = math.atan(sobel_y[x, y] / sobel_x[x, y])
+                angle = angle * (180/math.pi)  # Convert to degrees
 
+            output[x, y] = angle
             y += 1
         y = 0
         x += 1
