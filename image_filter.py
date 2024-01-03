@@ -102,3 +102,45 @@ def gradient_direction(sobel_x: np.ndarray, sobel_y: np.ndarray) -> np.ndarray:
         x += 1
 
     return output
+
+
+def round_gradient_direction(grad_dir: np.ndarray) -> np.ndarray:
+    """
+    Round gradient direction angles to 0, 45, or 135 degrees
+    :param grad_dir: 2D numpy array of angles (in degrees) for an image gradient
+    :return: 2D numpy array of rounded angles from grad_dir
+    """
+    grad_size = grad_dir.shape
+
+    output = np.zeros(grad_size)
+
+    for x in range(grad_size[0]):
+        for y in range(grad_size[1]):
+            angle = grad_dir[x, y]
+
+            if angle > 0:
+                if 0 < angle < 22.5:
+                    out_angle = 0
+                elif 22.5 <= angle < 67.5:
+                    out_angle = 45
+                elif 67.5 <= angle < 112.5:
+                    out_angle = 90
+                else:
+                    out_angle = 135
+
+            elif angle < 0:
+                if -22.5 < angle < 0:
+                    out_angle = 0
+                elif -67.5 < angle <= -22.5:
+                    out_angle = 135
+                elif -112.5 < angle <= -67.5:
+                    out_angle = 90
+                else:
+                    out_angle = 45
+
+            else:
+                out_angle = 0
+
+            output[x, y] = out_angle
+
+    return output
