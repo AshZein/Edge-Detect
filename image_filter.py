@@ -144,3 +144,53 @@ def round_gradient_direction(grad_dir: np.ndarray) -> np.ndarray:
             output[x, y] = out_angle
 
     return output
+
+def non_max_suppression(gradient: np.ndarray, direction: np.ndarray) -> np.ndarray:
+    """
+    Apply the non-max suppression algorithm to the image gradient to create thinner edges
+
+    :param gradient: numpy array of the image's gradient
+    :param direction: numpy array of rounded edge direction of gradient
+    :return: numpy array of a new image gradient
+    """
+    grad_shape = gradient.shape
+
+    output = np.zeros(grad_shape)
+
+    for x in range(grad_shape[0]):
+        for y in range(grad_shape[1]):
+            curr_pixel = gradient[x, y]
+            curr_direction = direction[x, y]
+
+            if curr_direction == 0:
+                adj_1 = (x + 1, y)
+                adj_2 = (x - 1, y)
+
+            elif curr_direction == 45:
+                adj_1 = (x + 1, y + 1)
+                adj_2 = (x - 1, y - 1)
+
+            elif curr_direction == 90:
+                adj_1 = (x, y + 1)
+                adj_2 = (x, y - 1)
+
+            else:
+                adj_1 = (x - 1, y + 1)
+                adj_2 = (x + 1, y - 1)
+
+            if 0 <= adj_1[0] < grad_shape[0] and 0 <= adj_1[1] < grad_shape[1]:
+                adj_pixel = gradient[adj_1[0], adj_1[1]]
+                if adj_pixel > curr_pixel:
+                    output[x, y] = 0
+                    curr_pixel = -1 # set curr_pixel to -1 to avoid comparison of other adjacent pixel
+
+            if curr_pixel != -1 and 0 <= adj_2[0] < grad_shape[0] and 0 <= adj_2[1] < grad_shape[1]:
+                adj_pixel = gradient[adj_2[0], adj_2[1]]
+                if adj_pixel > curr_pixel:
+                    output[x, y] = 0
+                    curr_pixel = -1
+
+            if curr_pixel != -1:  # adjacent pixels had equal intensities
+                output[x, y] = curr_pixel
+
+    return output
