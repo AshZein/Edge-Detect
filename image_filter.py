@@ -145,6 +145,7 @@ def round_gradient_direction(grad_dir: np.ndarray) -> np.ndarray:
 
     return output
 
+
 def non_max_suppression(gradient: np.ndarray, direction: np.ndarray) -> np.ndarray:
     """
     Apply the non-max suppression algorithm to the image gradient to create thinner edges
@@ -194,3 +195,9 @@ def non_max_suppression(gradient: np.ndarray, direction: np.ndarray) -> np.ndarr
                 output[x, y] = curr_pixel
 
     return output
+
+
+def calculate_thresholds_hyster()-> tuple(float, float):
+    high = 0
+    low = 0
+    return high, low
