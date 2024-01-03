@@ -27,8 +27,13 @@ def perform_edge_detect(img: np.ndarray) -> np.ndarray:
     sobel_y = util.image_convolution(gaussian_filtered, sobel_kernels[1])
 
     gradient = imf.combine_sobel(sobel_x, sobel_y)
+    grad_dir = imf.gradient_direction(sobel_x, sobel_y)
 
-    return gradient
+    rounded_grad_dir = imf.round_gradient_direction(grad_dir)
+
+    non_max_sup = imf.non_max_suppression(gradient, rounded_grad_dir)
+
+    return non_max_sup
 
 
 if __name__ == '__main__':
