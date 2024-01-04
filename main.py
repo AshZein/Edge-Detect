@@ -5,8 +5,6 @@ import utilities as util
 import sys
 import os
 
-valid_ops = [ "edge-detect"]
-
 
 def open_img_grey(path: str) -> np.ndarray:
     img = cv2.imread(path)
@@ -37,13 +35,12 @@ def perform_edge_detect(img: np.ndarray) -> np.ndarray:
 
 
 if __name__ == '__main__':
-    # command: python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME
+    # command: python3 main.py FILE_PATH OUTPUT_FILE_NAME
 
-    if len(sys.argv) > 2 and sys.argv[1].lower() in valid_ops:
+    if len(sys.argv) > 2:
         img = open_img_grey(sys.argv[2])
-        
-        if sys.argv[1].lower() == "edge-detect":
-            output = perform_edge_detect(img)
+
+        output = perform_edge_detect(img)
 
         if len(sys.argv) == 3:
             filename = sys.argv[2].split("/")

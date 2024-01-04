@@ -197,7 +197,7 @@ def non_max_suppression(gradient: np.ndarray, direction: np.ndarray) -> np.ndarr
     return output
 
 
-def calculate_thresholds_hyster()-> tuple(float, float):
+def calculate_thresholds_hysterisis()-> tuple[float, float]:
     high = 0
     low = 0
     return high, low
