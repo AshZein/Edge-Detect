@@ -23,7 +23,11 @@ this implementation has not applied any of the fixes yet.
 After the noise reduction is completed, two 3x3 Sobel kernels are applied to the image, again by convolution. 
 One kernel is used to obtain the image gradient in the horiziontal direction, the other in the vertical direction.
 The following formula is used to produce the image's gradient:
-ADD FORMULA HERE!!!
+
+$Image Gradient = \sqrt{G_x^2 + G_y^2}$
+
+$Angle(\Theta) = arctan(\frac{G_y}{G_x})$
+
 Where G<sub>x</sub> is the horizontal gradient and G<sub>y</sub> is the vertical gradient.
 
 
