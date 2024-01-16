@@ -11,6 +11,7 @@ def open_img_grey(path: str) -> np.ndarray:
 
     return opened_img
 
+
 def perform_edge_detect(image: np.ndarray) -> np.ndarray:
     gaussian_kernel = imf.create_gaussian_kernel(5, 1.4)
 
@@ -59,21 +60,3 @@ if __name__ == '__main__':
 
     else:
         print("invalid command.\n python3 main.py FILE_PATH")
-
-
-    # if len(sys.argv) > 2:
-    #     img = open_img_grey(sys.argv[2])
-    #
-    #     output = perform_edge_detect(img)
-    #
-    #     if len(sys.argv) == 3:
-    #         filename = sys.argv[2].split("/")
-    #         filename = filename[-1]
-    #
-    #         cv2.imwrite(f"output_{filename}", output)
-    #
-    #     elif len(sys.argv) == 4:
-    #         cv2.imwrite(f"{sys.argv[3]}.jpg", output)
-    #
-    # else:
-    #     print("invalid command.\n python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME")
