@@ -7,19 +7,16 @@ import os
 
 
 def open_img_grey(path: str) -> np.ndarray:
-    img = cv2.imread(path)
+    opened_img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
 
-    grey_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return opened_img
 
-    return grey_img
-
-
-def perform_edge_detect(img: np.ndarray) -> np.ndarray:
-    gaussian_kernel = imf.create_gaussian_kernel(5, 14)
+def perform_edge_detect(image: np.ndarray) -> np.ndarray:
+    gaussian_kernel = imf.create_gaussian_kernel(5, 1.4)
 
     sobel_kernels = imf.get_sobel_kernels()
 
-    gaussian_filtered = util.image_convolution(img, gaussian_kernel)
+    gaussian_filtered = util.image_convolution(image, gaussian_kernel)
 
     sobel_x = util.image_convolution(gaussian_filtered, sobel_kernels[0])
     sobel_y = util.image_convolution(gaussian_filtered, sobel_kernels[1])
@@ -35,21 +32,48 @@ def perform_edge_detect(img: np.ndarray) -> np.ndarray:
 
 
 if __name__ == '__main__':
-    # command: python3 main.py FILE_PATH OUTPUT_FILE_NAME
+    # command: python3 main.py FILE_PATH
 
-    if len(sys.argv) > 2:
-        img = open_img_grey(sys.argv[2])
+    if len(sys.argv) == 2:
+        grey_img = open_img_grey(sys.argv[1])
 
-        output = perform_edge_detect(img)
+        output = perform_edge_detect(grey_img)
 
-        if len(sys.argv) == 3:
-            filename = sys.argv[2].split("/")
-            filename = filename[-1]
+        filename = sys.argv[1].split("/")
+        filename = filename[-1]
+
+        cv2.imwrite(f"output_{filename}", output)
+        print("---DONE---")
+
+    elif len(sys.argv) == 1:
+        img_num = input("please enter the number of the test image from the test_images directory: ")
+
+        filename = "test_img_" + img_num + ".jpg"
+        if filename in os.listdir("test_images"):
+            grey_img = open_img_grey(f"test_images/{filename}")
+
+            output = perform_edge_detect(grey_img)
 
             cv2.imwrite(f"output_{filename}", output)
-
-        elif len(sys.argv) == 4:
-            cv2.imwrite(f"{sys.argv[3]}.jpg", output)
+            print("---DONE---")
 
     else:
-        print("invalid command.\n python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME")
+        print("invalid command.\n python3 main.py FILE_PATH")
+
+
+    # if len(sys.argv) > 2:
+    #     img = open_img_grey(sys.argv[2])
+    #
+    #     output = perform_edge_detect(img)
+    #
+    #     if len(sys.argv) == 3:
+    #         filename = sys.argv[2].split("/")
+    #         filename = filename[-1]
+    #
+    #         cv2.imwrite(f"output_{filename}", output)
+    #
+    #     elif len(sys.argv) == 4:
+    #         cv2.imwrite(f"{sys.argv[3]}.jpg", output)
+    #
+    # else:
+    #     print("invalid command.\n python3 main.py OPERATION FILE_PATH OUTPUT_FILE_NAME")
